@@ -21,8 +21,8 @@ metadata:
     app: cmpt756s1
 spec:
   ports:
-  - port: 30000
-    name: http
+    - port: 30000
+      name: http
   selector:
     app: cmpt756s1
 ---
@@ -55,27 +55,27 @@ spec:
     spec:
       serviceAccountName: svc-s1
       containers:
-      - name: cmpt756s1
-        image: ghcr.io/tedkirkpatrick/cmpt756s1:v1.0.2
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 30000
-        livenessProbe:
-          httpGet:
-            path: /api/v1/user/health
-            port: 30000
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          failureThreshold: 5
-        readinessProbe:
-          httpGet:
-            path: /api/v1/user/readiness
-            port: 30000
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          timeoutSeconds: 2
-          successThreshold: 1
-          failureThreshold: 5
+        - name: cmpt756s1
+          image: https://github.com/tedkirkpatrick/ktb-argocd.git:v1.1.1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 30000
+          livenessProbe:
+            httpGet:
+              path: /api/v1/user/health
+              port: 30000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /api/v1/user/readiness
+              port: 30000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 2
+            successThreshold: 1
+            failureThreshold: 5
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -87,13 +87,13 @@ metadata:
 spec:
   namespaceSelector:
     matchNames:
-    - c756ns
+      - c756ns
   selector:
     matchLabels:
       app: cmpt756s1
   endpoints:
-  - port: http
-    path: /metrics
+    - port: http
+      path: /metrics
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -101,20 +101,20 @@ metadata:
   name: cmpt756s1
 spec:
   hosts:
-  # We do not know the hostname of traffic from this gateway, so
-  # apply this VS to every request entering it.
-  - "*"
+    # We do not know the hostname of traffic from this gateway, so
+    # apply this VS to every request entering it.
+    - "*"
   # As an externally-visible service, this only applies to the gateway
   gateways:
-  - c756-gateway
+    - c756-gateway
   http:
-  - match:
-    - uri:
-        prefix: /api/v1/user
-    rewrite:
-      uri: /api/v1/user
-    route:
-    - destination:
-        host: cmpt756s1
-        port:
-          number: 30000
+    - match:
+        - uri:
+            prefix: /api/v1/user
+      rewrite:
+        uri: /api/v1/user
+      route:
+        - destination:
+            host: cmpt756s1
+            port:
+              number: 30000
