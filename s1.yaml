@@ -76,3 +76,45 @@ spec:
           timeoutSeconds: 2
           successThreshold: 1
           failureThreshold: 5
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: cmpt756s1
+  labels:
+    app: cmpt756s1
+    release: c756
+spec:
+  namespaceSelector:
+    matchNames:
+    - c756ns
+  selector:
+    matchLabels:
+      app: cmpt756s1
+  endpoints:
+  - port: http
+    path: /metrics
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: cmpt756s1
+spec:
+  hosts:
+  # We do not know the hostname of traffic from this gateway, so
+  # apply this VS to every request entering it.
+  - "*"
+  # As an externally-visible service, this only applies to the gateway
+  gateways:
+  - c756-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /api/v1/user
+    rewrite:
+      uri: /api/v1/user
+    route:
+    - destination:
+        host: cmpt756s1
+        port:
+          number: 30000
