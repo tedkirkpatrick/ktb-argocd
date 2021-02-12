@@ -33,25 +33,40 @@ metadata:
   labels:
     account: SVC_S1
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
   name: cmpt756s1
   labels:
     app: cmpt756s1
-    version: v1
+    version: v1.2.0
 spec:
   replicas: 1
+  strategy:
+    canary:
+      canaryService: cmpt756s1-canary
+      stableService: cmpt756s1
+      trafficRouting:
+        istio:
+          virtualservice:
+            name: cmpt756s1
+            routes:
+              - cmpt756s1-vs
+      steps:
+        - setWeight: 20
+        - pause: {}
+        - setWeight: 40
+        - pause: {duration: 10}
+  revisionHistoryLimit: 2
   selector:
     matchLabels:
       app: cmpt756s1
-      version: v1
   template:
     metadata:
       name: service1-pod
       labels:
         app: cmpt756s1
-        version: v1
+        version: v1.2.0
     spec:
       serviceAccountName: svc-s1
       containers:
@@ -108,13 +123,20 @@ spec:
   gateways:
     - c756-gateway
   http:
-    - match:
+    - name: cmpt756s1-vs
+      match:
         - uri:
             prefix: /api/v1/user
       rewrite:
         uri: /api/v1/user
       route:
         - destination:
+            weight: 100
             host: cmpt756s1
+            port:
+              number: 30000
+        - destination:
+            weight: 0
+            host: cmpt756s1-canary
             port:
               number: 30000
