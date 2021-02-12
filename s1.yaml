@@ -131,12 +131,12 @@ spec:
         uri: /api/v1/user
       route:
         - destination:
-            weight: 100
             host: cmpt756s1
             port:
               number: 30000
+          weight: 100
         - destination:
-            weight: 0
             host: cmpt756s1-canary
             port:
               number: 30000
+          weight: 0
