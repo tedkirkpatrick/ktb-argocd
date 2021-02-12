@@ -27,6 +27,19 @@ spec:
     app: cmpt756s1
 ---
 apiVersion: v1
+kind: Service
+metadata:
+  name: cmpt756s1-canary
+  labels:
+    app: cmpt756s1
+spec:
+  ports:
+    - port: 30000
+      name: http
+  selector:
+    app: cmpt756s1
+---
+apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: svc-s1
@@ -79,7 +92,7 @@ spec:
       stableService: cmpt756s1
       trafficRouting:
         istio:
-          virtualservice:
+          virtualService:
             name: cmpt756s1
             routes:
               - cmpt756s1-vs
