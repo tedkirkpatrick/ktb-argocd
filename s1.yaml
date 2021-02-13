@@ -115,7 +115,7 @@ spec:
       serviceAccountName: svc-s1
       containers:
         - name: cmpt756s1
-          image: ghcr.io/tedkirkpatrick/cmpt756s1:v1.2.0
+          image: ghcr.io/tedkirkpatrick/cmpt756s1:v1.3.0
           imagePullPolicy: Always
           ports:
             - containerPort: 30000
