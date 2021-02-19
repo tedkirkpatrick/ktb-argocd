@@ -100,7 +100,9 @@ spec:
         - setWeight: 20
         - pause: {}
         - setWeight: 40
-        - pause: {duration: 10}
+        - pause: {}
+        - setWeight: 80
+        - pause: {duration: 20}
   revisionHistoryLimit: 2
   selector:
     matchLabels:
@@ -115,7 +117,7 @@ spec:
       serviceAccountName: svc-s1
       containers:
         - name: cmpt756s1
-          image: ghcr.io/tedkirkpatrick/cmpt756s1:v1.3.0
+          image: ghcr.io/tedkirkpatrick/cmpt756s1:v1.4.4
           imagePullPolicy: Always
           ports:
             - containerPort: 30000
