@@ -83,7 +83,7 @@ metadata:
   name: cmpt756s1
   labels:
     app: cmpt756s1
-    version: v1.2.0
+    version: v1.4.5
 spec:
   replicas: 1
   strategy:
@@ -103,7 +103,7 @@ spec:
         - pause: {}
         - setWeight: 80
         - pause: {duration: 20}
-  revisionHistoryLimit: 2
+  revisionHistoryLimit: 1
   selector:
     matchLabels:
       app: cmpt756s1
@@ -112,12 +112,15 @@ spec:
       name: service1-pod
       labels:
         app: cmpt756s1
-        version: v1.2.0
+        version: v1.4.5
     spec:
       serviceAccountName: svc-s1
       containers:
         - name: cmpt756s1
-          image: ghcr.io/tedkirkpatrick/cmpt756s1:v1.4.4
+          image: ghcr.io/tedkirkpatrick/cmpt756s1:v1.4.5
+          env:
+            - name: VERSION
+              value: v1.4.5
           imagePullPolicy: Always
           ports:
             - containerPort: 30000
